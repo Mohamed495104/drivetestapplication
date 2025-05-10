@@ -1,0 +1,110 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+  <body>
+    <!-- Navbar -->
+    <%- include('layouts/navbar.ejs'); -%>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container text-center text-white">
+        <h1 class="hero-title">Sign Up</h1>
+      </div>
+    </section>
+
+    <!-- Alerts -->
+    <div class="container mt-3">
+      <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Signup Form -->
+    <div class="container mt-4">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-body">
+              <form action="/signup" method="POST" onsubmit="return validateForm()">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="username" 
+                    name="username" 
+                    value="<%= locals.formData ? formData.username : '' %>"
+                    placeholder="Enter atleast 3 characters (no special characters allowed)"
+                    pattern="[a-zA-Z0-9]{3,}"
+                    title="Username must be at least 3 characters and contain only letters and numbers"
+                    required 
+                  />
+                  <div class="form-text">Please Enter Valid Username, no special characters allowed</div>
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter atleast 3 characters"
+                    minlength="3"
+                    title="Password must be at least 3 characters"
+                    required 
+                  />
+                  <div class="form-text">Please Enter Valid Password with at least 3 characters </div>
+                </div>
+                <div class="mb-3">
+                  <label for="confirmPassword" class="form-label">Confirm Password</label>
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="Re-enter your password"
+                    required 
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="userType" class="form-label">User Type</label>
+                  <select class="form-select" id="userType" name="userType" required>
+                    <option value="" selected disabled>Select User Type</option>
+                    <option value="Driver" <%= locals.formData && formData.userType === 'Driver' ? 'selected' : '' %>>Driver</option>
+                    <option value="Examiner" <%= locals.formData && formData.userType === 'Examiner' ? 'selected' : '' %>>Examiner</option>
+                    <option value="Admin" <%= locals.formData && formData.userType === 'Admin' ? 'selected' : '' %>>Admin</option>
+                  </select>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Register</button>
+                  <a href="/login" class="btn btn-link">Already have an account? Login</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- Footer-->
+     <%- include('layouts/footer'); -%>
+     <!-- Bootstrap core JS-->
+     <%- include('layouts/scripts'); -%>
+     
+ 
+   <script src="/js/script.js"></script>
+  </body>
+</html>

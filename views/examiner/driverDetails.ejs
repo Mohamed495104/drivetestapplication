@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Evaluation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"></head>
+<body>
+    <%- include('../layouts/navbar') %>
+
+    <div class="container mt-4">
+        <h1>Driver Evaluation</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2><%= driver.firstname %> <%= driver.lastname %></h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Driver Information</h4>
+                        <p><strong>License Number:</strong> <%= driver.LicenseNo %></p>
+                        <p><strong>Age:</strong> <%= driver.age %></p>
+                        <p><strong>Test Type:</strong> <%= driver.testType %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Car Details</h4>
+                        <p><strong>Make:</strong> <%= driver.car_details.make %></p>
+                        <p><strong>Model:</strong> <%= driver.car_details.model %></p>
+                        <p><strong>Year:</strong> <%= driver.car_details.year %></p>
+                        <p><strong>Plate No:</strong> <%= driver.car_details.platno %></p>
+                    </div>
+                </div>
+
+                <% if (driver.appointments && driver.appointments.length > 0) { %>
+                    <hr>
+                    <h4>Appointment Details</h4>
+                    <p><strong>Date/Time:</strong> <%= driver.appointments[0].date.toLocaleString() %></p>
+                <% } %>
+
+                <% if (driver.testResult && driver.testResult.date) { %>
+                    <hr>
+                    <h4>Previous Test Result</h4>
+                    <p><strong>Result:</strong> 
+                        <span class="badge bg-<%= driver.testResult.passed ? 'success' : 'danger' %>">
+                            <%= driver.testResult.passed ? 'Passed' : 'Failed' %>
+                        </span>
+                    </p>
+                    <p><strong>Comments:</strong> <%= driver.testResult.comments %></p>
+                    <p><strong>Date:</strong> <%= driver.testResult.date.toLocaleString() %></p>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Submit Test Results</h3>
+            </div>
+            <div class="card-body">
+                <form action="/examiner/submit-result" method="POST">
+                    <input type="hidden" name="driverId" value="<%= driver._id %>">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Test Result:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="passed" id="pass" value="true" required>
+                            <label class="form-check-label" for="pass">Pass</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="passed" id="fail" value="false">
+                            <label class="form-check-label" for="fail">Fail</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comments:</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="3" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Submit Results</button>
+                    <a href="/examiner" class="btn btn-secondary">Back to Dashboard</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../layouts/footer'); %>
+    <%- include('../layouts/scripts'); %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</body>
+</html>

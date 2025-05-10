@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examiner Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"></head>
+<body>
+    <%- include('../layouts/navbar') %>
+
+    <div class="container mt-4">
+        <h1>Examiner Dashboard</h1>
+
+        <div class="btn-group mb-4">
+            <a href="/examiner" class="btn btn-primary">All Tests</a>
+            <a href="/examiner/filter/G2" class="btn btn-outline-primary">G2 Tests</a>
+            <a href="/examiner/filter/G" class="btn btn-outline-primary">G Tests</a>
+        </div>
+
+        <% if (drivers.length === 0) { %>
+            <div class="alert alert-info">No drivers found with appointments</div>
+        <% } else { %>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Test Type</th>
+                        <th>Appointment Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% drivers.forEach(driver => { %>
+                        <tr>
+                            <td><%= driver.firstname %> <%= driver.lastname %></td>
+                            <td><%= driver.testType || 'Not specified' %></td>
+                            <td>
+                                <% if (driver.appointments && driver.appointments.length > 0) { %>
+                                    <%= driver.appointments[0].date.toLocaleString() %>
+                                <% } else { %>
+                                    No appointment
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/examiner/driver/<%= driver._id %>" class="btn btn-sm btn-primary">
+                                    View/Evaluate
+                                </a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
+
+    <%- include('../layouts/footer'); %>
+    <%- include('../layouts/scripts'); %>
+
+   </body>
+</html>

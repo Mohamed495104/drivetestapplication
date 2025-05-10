@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        /*  styles for already existing slots */
+        .time-slot.exists {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <%- include('layouts/navbar.ejs'); %>
+
+    <div class="appointment-container">
+        <h1>Manage Appointment Slots</h1>
+
+        <!-- Alert container for JavaScript alerts -->
+        <div id="alert-container"></div>
+
+        <div class="appointment-form">
+            <h3>Create New Appointment Slot</h3>
+            <form id="createAppointmentForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="appointmentDate" class="form-label">Date:</label>
+                        <input type="date" class="form-control" id="appointmentDate" name="date" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Test Type:</label>
+                        <select class="form-select" id="appointmentTestType" name="testType" required>
+                            <option value="">Select test type</option>
+                            <option value="G2">G2 Test</option>
+                            <option value="G">G Test</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Select Time:</label>
+                    <div class="time-slots">
+                        <% const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00',
+                                             '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00']; %>
+                        <% timeSlots.forEach(time => { %>
+                            <button type="button" class="time-slot" data-time="<%= time %>">
+                                <%= time.replace(/^0/, '') %>
+                            </button>
+                        <% }); %>
+                    </div>
+                    <input type="hidden" id="appointmentTime" name="time" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="submit-text">Create Appointment Slot</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </form>
+        </div>
+
+        <div class="appointments-list">
+            <h2>Existing Appointment Slots</h2>
+            <% if (appointments.length === 0) { %>
+                <div class="alert alert-info">No appointment slots have been created yet.</div>
+            <% } else { %>
+                <% 
+                // Group appointments by date
+                const appointmentsByDate = {};
+                appointments.forEach(appointment => {
+                    // Force UTC interpretation to avoid timezone issues
+                    const appointmentDate = new Date(appointment.date);
+                    const dateStr = appointmentDate.toLocaleDateString('en-US', { 
+                        timeZone: 'UTC',
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    if (!appointmentsByDate[dateStr]) {
+                        appointmentsByDate[dateStr] = [];
+                    }
+                    appointmentsByDate[dateStr].push(appointment);
+                });
+                %>
+                <% Object.keys(appointmentsByDate).forEach(dateStr => { %>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><%= dateStr %></h5>
+                        </div>
+                        <div class="card-body">
+                            <% appointmentsByDate[dateStr].forEach(appointment => { %>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <span class="badge bg-<%= appointment.testType === 'G2' ? 'info' : 'primary' %> me-2">
+                                            <%= appointment.testType %>
+                                        </span>
+                                        <span><%= appointment.time %></span>
+                                        <% if (appointment.isBooked) { %>
+                                            <span class="badge bg-success ms-2">Booked</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary ms-2">Available</span>
+                                        <% } %>
+                                    </div>
+                                    <% if (!appointment.isBooked) { %>
+                                        <button class="btn btn-danger btn-sm delete-btn" 
+                                                data-id="<%= appointment._id %>">
+                                            Delete
+                                        </button>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Data container with properly encoded JSON -->
+    <script id="appointments-data" type="application/json">
+        <%- JSON.stringify(appointments.map(a => ({
+            _id: a._id.toString(),
+            date: a.date.toISOString(),
+            time: a.time,
+            testType: a.testType,
+            isBooked: a.isBooked || false
+        }))) %>
+    </script>
+
+    <%- include('layouts/footer'); %>
+    <%- include('layouts/scripts'); %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/appointment-page.js"></script>
+</body>
+</html>
